@@ -1,6 +1,5 @@
 const Data = require('./model');
 
-
 const getData = async (req, res) => {
     try {
          // Use the Data model to fetch data from the database
