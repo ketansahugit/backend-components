@@ -5,7 +5,7 @@ const Model = require('./model')
 const corsMiddleware = require('./corsMiddleware');
 const errorHandler = require('./errorHandler');
 require('dotenv').config();
-const requestLogger = require('./requestLogger');
+const { requestLogger } = require('./requestLogger');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,4 +30,4 @@ app.use(errorHandler);
 
 app.listen(port, () => {
     console.log(`Server is listening at localhost: ${port}`)
-})
+});
