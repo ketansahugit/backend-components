@@ -1,4 +1,5 @@
 const Data = require('./model');
+const { validationResult } = require('express-validator');
 
 const getData = async (req, res) => {
     try {
@@ -12,6 +13,13 @@ const getData = async (req, res) => {
 };
 
 const createData = async (req, res) => {
+    
+    // Validate input using express validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         // Use the Data model to create data in the database
         const newData = await Data.create(req.body);
