@@ -13,18 +13,35 @@ const winston = require('winston');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configure Winston to log to console and a file
+/* // Configure Winston to log to console and a file
 const logger = winston.createLogger({
-    transports: [
-        new winston.transports.console(),
-        new winston.transports.File({filename: 'logfile.log'}),
-    ],
+    level: 'info',
     format: winston.format.combine(
-        winston.format.timestamp(),
+        winston.format.timestamp(), //this
         winston.format.json()
     ),
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({
+            filename: 'logfile.log',
+            level: 'info',
+            format: winston.format.combine(winston.format.timestamp(), winston.format.json())
+        }),
+    ],
 });
+ */
 
+/* const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({ filename: 'logfile.log' }),
+    ]
+  }); */
+  /* 
+  logger.info('Hello, Winston!');
+  logger.error('Something went wrong', {error: new Error('Something went wrong')}); */
 // Middleware to parse JSON in the request body
 app.use(express.json());
 
@@ -46,13 +63,23 @@ connectDB();
 app.use(corsMiddleware);
 
 // Use winston for logging requests
-app.use(requestLogger);
+ app.use(requestLogger);
 
 // Using the routes in the application
 app.use('/', routes);
 
+
 // Use the error handling middleware
 app.use(errorHandler);
+
+// Custom middleware for logger
+/* const myMiddleware = (req, res, next) => {
+    // Log custom middleware activity
+    logger.info('Custom middleware executed');
+    next();
+}; */
+
+/* app.use(myMiddleware); */
 
 app.listen(port, () => {
     console.log(`Server is listening at localhost: ${port}`)
