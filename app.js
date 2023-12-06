@@ -8,9 +8,22 @@ require('dotenv').config();
 const { requestLogger } = require('./requestLogger');
 const helmet = require('helmet'); //security middleware
 const rateLimit = require('express-rate-limit'); //rate limiter
+const winston = require('winston');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configure Winston to log to console and a file
+const logger = winston.createLogger({
+    transports: [
+        new winston.transports.console(),
+        new winston.transports.File({filename: 'logfile.log'}),
+    ],
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+});
 
 // Middleware to parse JSON in the request body
 app.use(express.json());
@@ -32,7 +45,7 @@ connectDB();
 // Use the CORS middleware
 app.use(corsMiddleware);
 
-// to log requests
+// Use winston for logging requests
 app.use(requestLogger);
 
 // Using the routes in the application

@@ -1,9 +1,15 @@
-const requestLogger = (req, res, next) => {
-    // Do something with the request or response
-    console.log(`Received ${req.method} request for ${req.url}`);
+const winston = require('winston');
 
-    // Call the next middleware function in the stack
-    next();
+const requestLogger = (req, res, next) => {
+    // Log the request using winston
+    winston.info(`Received ${req.method} request for ${req.url}`, {
+        method: req.method,
+        url: req.url,
+        timestamp: new Date(),
+    })
+
+  // Continue with the next middleware
+  next();
 }
 
 exports.requestLogger = requestLogger;
