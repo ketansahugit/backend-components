@@ -1,5 +1,4 @@
 const winston = require('winston');
-const path = require('path');
 
 const logger = winston.createLogger({
   level: 'info',
@@ -8,14 +7,14 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'log.log' }),
+    new winston.transports.Console(), // log in the console
+    new winston.transports.File({ filename: 'log.log' }), // log file output
   ],
 });
 
 const requestLogger = (req, res, next) => {
+  /* console.log(`Received ${req.method} request for ${req.url}`); */
     // Log the request using winston
-    /* console.log(`Received ${req.method} request for ${req.url}`); */
     logger.info({
       method: req.method,
       url: req.url,
