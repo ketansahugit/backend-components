@@ -5,19 +5,18 @@ const getData = async (req, res) => {
     try {
          // Use the Data model to fetch data from the database
          const data = await Data.find();
-         res.status(200).json({ data });
+         res.status(200).header('Content-Type', 'application/json').json({ data });
     } catch (error) {
         console.error('Error fetching data', error);
-        res.status(500).json({error: 'Internal Server Error'})
+        res.status(500).header('Content-Type', 'application/json').json({error: 'Internal Server Error'})
     }
 };
 
 const createData = async (req, res) => {
-    
     // Validate input using express validator
     const errors = validationResult(req);
     if (!errors.isEmpty) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).header('Content-Type', 'application/json').json({ errors: errors.array() });
     }
 
     try {
