@@ -3,6 +3,9 @@ const router = express.Router();
 const controller = require('./controller');
 const errorHandler = require('./errorHandler');
 
+// Welcome message route
+router.get('/', controller.getWelcomeMessage);
+
 router.get('/api/users', controller.getData);
 router.post('/api/users', controller.createData);
 

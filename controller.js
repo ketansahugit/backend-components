@@ -1,6 +1,10 @@
 const Data = require('./model');
 const { validationResult } = require('express-validator');
 
+const getWelcomeMessage = (req, res) => {
+    res.status(200).json({ message: 'Welcome to your API!'});
+};
+
 const getData = async (req, res) => {
     try {
          // Use the Data model to fetch data from the database
@@ -29,4 +33,4 @@ const createData = async (req, res) => {
     }
 };
 
-module.exports = {getData, createData};
+module.exports = {getWelcomeMessage, getData, createData};

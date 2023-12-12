@@ -38,6 +38,7 @@ app.use('/', routes);
 // Use the error handling middleware
 app.use(errorHandler);
 
-app.listen(port, () => {
+module.exports = app.listen(port, () => { // exporting for tests
     console.log(`Server is listening at localhost: ${port}`)
 });
+
