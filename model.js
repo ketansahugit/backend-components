@@ -11,4 +11,14 @@ const dataSchema = new mongoose.Schema({
 // Create a Mongoose model using the schema
 const Data = mongoose.model('Data', dataSchema);
 
-module.exports = Data;
+// Define a Mongoose schema for posts
+const postSchema = new mongoose.Schema({
+    title: String,
+    content: String,
+    // add other fields as needed
+});
+
+// Create a Mongoose model for posts
+const Post = mongoose.model('Post', postSchema);
+
+module.exports = { Data, Post };
