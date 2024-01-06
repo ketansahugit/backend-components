@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const controller = require('./controller');
-const errorHandler = require('./errorHandler');
+const controller = require('../controllers/controller');
+const errorHandler = require('../middleware/errorHandler');
 
 // Welcome message route
 router.get('/', controller.getWelcomeMessage);

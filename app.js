@@ -1,14 +1,14 @@
 const express = require("express");
-const routes = require("./routes");
+const routes = require("./src/routes/routes");
 const connectDB = require('./db');
-const model = require('./model')
-const corsMiddleware = require('./corsMiddleware');
-const errorHandler = require('./errorHandler');
+const model = require('./src/models/model');
+const corsMiddleware = require('./src/middleware/corsMiddleware');
+const errorHandler = require('./src/middleware/errorHandler');
 require('dotenv').config();
-const { requestLogger } = require('./requestLogger');
+const { requestLogger } = require('./src/middleware/requestLogger');
 const helmet = require('helmet'); //security middleware
 const rateLimit = require('express-rate-limit'); //rate limiter
-const limiter = require('./limiter');
+const limiter = require('./src/middleware/limiter');
 const winston = require('winston');
 
 const app = express();
