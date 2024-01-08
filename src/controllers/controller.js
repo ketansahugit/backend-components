@@ -1,5 +1,7 @@
 const { Data, Post } = require('../models/model');
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
+const { generateToken } = require('../middleware/authMiddleware');
 
 // welcome message
 const getWelcomeMessage = (req, res) => {
