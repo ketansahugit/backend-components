@@ -1,6 +1,5 @@
-const { Data, Post } = require('../models/model');
+const { Data, Post, User } = require('../models/model');
 const { validationResult } = require('express-validator');
-const bcrypt = require('bcrypt');
 const { generateToken } = require('../middleware/authMiddleware');
 
 // welcome message
@@ -24,8 +23,8 @@ const getData = async (req, res) => {
 const createData = async (req, res) => {
     // Validate input using express validator
     const errors = validationResult(req);
-    if (!errors.isEmpty) {
-        return res.status(400).header('Content-Type', 'application/json').json({ errors: errors.array() });
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
 
     try {
@@ -54,7 +53,7 @@ const getPosts = async (req, res) => {
 const createPost = async (req, res) => {
     // Validate input using express validator
     const errors = validationResult(req);
-    if (!errors.isEmpty) {
+    if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
@@ -120,4 +119,37 @@ const deletePost = async (req, res) => {
     }
 };
 
-module.exports = {getWelcomeMessage, getData, createData, getPosts, createPost, updatePost, deletePost};
+// User Registration
+const registerUser = async (req, res) => {
+    // Validate input using express validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, password } = req.body;
+
+    try {
+        // Check if the username already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(409).json({ message: 'Username already exists' });
+        }
+
+        // Create a new user
+        const newUser = new User({ username, password });
+        await newUser.save();
+
+        // Generate a JWT token for the registere user
+        const token = generateToken(newUser);
+
+        // Return the token and any additional information you want
+        res.status(201).json({ token, message: 'Registration successful' });
+
+    } catch(error) {
+        console.error('Error registering user', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = {getWelcomeMessage, getData, createData, getPosts, createPost, updatePost, deletePost, registerUser};

@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const bcrypt = require('bcrypt');
+const { User } = require('../models/model');
 
 /* node -e "console.log(require('crypto').randomBytes(32).toString('hex'));" */ //to generate a secret key
 const secretKey = process.env.JWT_SECRET || 'your-secret-key'
@@ -21,17 +22,37 @@ passport.use(new JwtStrategy({
 }, async (payload, done) => {
     try {
         // Check if the user exists based on the payload
-        const user = await YourUserModel.findById(payload.id);
+        const user = await User.findById(payload.id);
         if (!user) {
-            return done(null, user);
+            return done(null, false);
         }
+        return done(null, user);
     } catch (error) {
         return done(error, false);
     }
 }));
 
 // Middleware for user authentication
-const authenticate = passport.authenticate('local', { session: false });
+const authenticate = async (username, password, done) => {
+    try {
+        // check if the user exists
+        const user = await User.findOne({ username });
+        if (!user) {
+            return done(null, false, { message: 'Invalid username or password' });
+        }
+
+        // Compare the password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return done(null, false, { message: 'Invalid username or password'})
+        }
+
+        // User and password are valid
+        return done(null, user);
+    } catch (error) {
+        return done(error);
+    }
+}
 
 // Middleware to authorize based on user role
 const authorizeRole = (requiredRole) => {
