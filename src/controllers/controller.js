@@ -1,6 +1,6 @@
 const { Data, Post, User } = require('../models/model');
 const { validationResult } = require('express-validator');
-const { generateToken } = require('../middleware/authMiddleware');
+const { generateToken, authenticate } = require('../middleware/authMiddleware');
 
 // welcome message
 const getWelcomeMessage = (req, res) => {
@@ -152,4 +152,33 @@ const registerUser = async (req, res) => {
     }
 };
 
-module.exports = {getWelcomeMessage, getData, createData, getPosts, createPost, updatePost, deletePost, registerUser};
+// User Login
+const loginUser = async (req, res) => {
+    // Validate input using express validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, password } = req.body;
+
+    try { 
+        // Authenticate the user
+        authenticate(username, password, (err, user) => {
+            if (err || !user) {
+                return res.status(401).json({ message: 'Invalid username or password' });
+            }
+
+            // Generate a JWT token for the authenticated user
+            const token = generateToken(user);
+
+            // Return the token and any additional information you want
+            res.status(200).json({ token, message: 'Login successful' });
+        });
+    } catch (error) {
+        console.error('Error during user login', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = {getWelcomeMessage, getData, createData, getPosts, createPost, updatePost, deletePost, registerUser, loginUser};

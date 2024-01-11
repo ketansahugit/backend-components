@@ -10,6 +10,10 @@ router.get('/', controller.getWelcomeMessage);
 // Registration route
 router.post('/api/register', controller.registerUser);
 
+// Login route
+router.post('/api/login', controller.loginUser);
+
+
 // data
 router.get('/api/users', authenticateJwt, controller.getData);
 router.post('/api/users', authenticateJwt, controller.createData);
