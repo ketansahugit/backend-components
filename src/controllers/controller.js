@@ -1,11 +1,55 @@
-const { Data, Post, User } = require('../models/model');
+const { User, Data, Post} = require('../models/model');
 const { validationResult } = require('express-validator');
-const { generateToken, authenticate } = require('../middleware/authMiddleware');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 
 // welcome message
 const getWelcomeMessage = (req, res) => {
     res.status(200).json({ message: 'Welcome to your API!'});
 };
+
+// Register 
+const register = async (req, res) => {
+    try {
+        const {firstName, lastName, email, password} = req.body;
+        if (!(firstName && lastName && email && password)) {
+            res.status(400).send('All fields are compulsory')
+        }
+        
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(401).send('User already exists with this email')
+        }
+
+        const myEncPassword = await bcrypt.hash(password, 10);
+        const user = await User.create({
+            firstName,
+            lastName,
+            email,
+            password: myEncPassword
+        })
+
+        // Generate a token for user and send it
+        const token = jwt.sign(
+            {id: user._id, email},
+            'shhhh', // process.env.jwtsecret
+            {
+                expiresIn: "2h"
+            }
+        );
+        user.token = token;
+        user.password = undefined; // this here wont specifically make it undefined in the db
+        
+        res.status(201).json(user)
+
+
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 // get data
 const getData = async (req, res) => {
@@ -119,66 +163,5 @@ const deletePost = async (req, res) => {
     }
 };
 
-// User Registration
-const registerUser = async (req, res) => {
-    // Validate input using express validator
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
 
-    const { username, password } = req.body;
-
-    try {
-        // Check if the username already exists
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(409).json({ message: 'Username already exists' });
-        }
-
-        // Create a new user
-        const newUser = new User({ username, password });
-        await newUser.save();
-
-        // Generate a JWT token for the registere user
-        const token = generateToken(newUser);
-
-        // Return the token and any additional information you want
-        res.status(201).json({ token, message: 'Registration successful' });
-
-    } catch(error) {
-        console.error('Error registering user', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
-// User Login
-const loginUser = async (req, res) => {
-    // Validate input using express validator
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { username, password } = req.body;
-
-    try { 
-        // Authenticate the user
-        authenticate(username, password, (err, user) => {
-            if (err || !user) {
-                return res.status(401).json({ message: 'Invalid username or password' });
-            }
-
-            // Generate a JWT token for the authenticated user
-            const token = generateToken(user);
-
-            // Return the token and any additional information you want
-            res.status(200).json({ token, message: 'Login successful' });
-        });
-    } catch (error) {
-        console.error('Error during user login', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
-module.exports = {getWelcomeMessage, getData, createData, getPosts, createPost, updatePost, deletePost, registerUser, loginUser};
+module.exports = {getWelcomeMessage, getData, createData, getPosts, createPost, updatePost, deletePost, register};

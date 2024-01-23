@@ -1,38 +1,27 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 
-// Define a Mongoose schema for user data
+// Define a Mongoose schema for User
 const userSchema = new mongoose.Schema({
-    username: {
+    firstname: {
         type: String,
-        unique: true,
-        required: true,
+        default: null,
+    },
+    lastname: {
+        type: String,
+        default: null,
+    },
+    email: {
+        type: String,
+        unique: true
     },
     password: {
         type: String,
-        require: true,
-    },
-    role: {
-        type: String,
-        enum: ['user', 'admin'], // Adjust roles as needed
-        default: 'user',
-    },
-});
-
-// Hash the user password before saving to the database
-userSchema.pre('save', async function (next) {
-    try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(this.password, salt);
-        this.password = hashedPassword;
-        next();
-    } catch (error) {
-        next(error);
     }
 })
 
-// Define a Mongoose model for users
+// Create a Mongoose model using the schema
 const User = mongoose.model('User', userSchema);
+
 
 // Define a Mongoose schema for your data
 const dataSchema = new mongoose.Schema({

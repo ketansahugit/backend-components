@@ -1,15 +1,12 @@
 const express = require("express");
 const routes = require("./src/routes/routes");
 const connectDB = require('./db');
-const model = require('./src/models/model');
 const corsMiddleware = require('./src/middleware/corsMiddleware');
 const errorHandler = require('./src/middleware/errorHandler');
 require('dotenv').config();
 const { requestLogger } = require('./src/middleware/requestLogger');
 const helmet = require('helmet'); //security middleware
-const rateLimit = require('express-rate-limit'); //rate limiter
 const limiter = require('./src/middleware/limiter');
-const winston = require('winston');
 
 const app = express();
 const port = process.env.PORT || 3000;
