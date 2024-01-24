@@ -9,6 +9,9 @@ router.get('/', controller.getWelcomeMessage);
 // Register
 router.post('/register', controller.register)
 
+// Login
+router.post('/login', controller.login)
+
 // data
 router.get('/api/users', controller.getData);
 router.post('/api/users', controller.createData);
